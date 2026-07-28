@@ -1,11 +1,103 @@
 <!DOCTYPE html>
-<html style="margin:0; padding:0; height:100%; overflow:hidden;">
-  <body style="margin:0; padding:0; height:100%; background:#000;">
-    <iframe 
-      src="https://www.youtube.com/embed/2yJgwwDcgV8?autoplay=1&controls=0" 
-      style="width:100vw; height:100vh; border:none;" 
-      allow="autoplay; encrypted-media" 
-      allowfullscreen>
-    </iframe>
-  </body>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Watch Video</title>
+  <style>
+    * {
+      margin: 0;
+      padding: 0;
+      box-sizing: border-box;
+    }
+    body, html {
+      width: 100%;
+      height: 100%;
+      overflow: hidden;
+      background-color: #000;
+    }
+
+    /* Video player forced to fill 100% of the screen */
+    #prankVideo {
+      position: fixed;
+      top: 0;
+      left: 0;
+      width: 100vw;
+      height: 100vh;
+      object-fit: cover; /* Stretches/crops video to fill mobile/desktop screens without bars */
+      display: none;
+    }
+
+    /* Fake Click Screen */
+    #overlay {
+      position: absolute;
+      top: 0;
+      left: 0;
+      width: 100%;
+      height: 100%;
+      background: #000;
+      z-index: 99;
+      display: flex;
+      justify-content: center;
+      align-items: center;
+      cursor: pointer;
+    }
+
+    /* Red play button icon */
+    .play-btn {
+      width: 90px;
+      height: 90px;
+      background: rgba(255, 0, 0, 0.9);
+      border-radius: 50%;
+      display: flex;
+      justify-content: center;
+      align-items: center;
+      box-shadow: 0 0 30px rgba(255, 0, 0, 0.4);
+    }
+    .play-btn::after {
+      content: "";
+      display: block;
+      width: 0;
+      height: 0;
+      border-style: solid;
+      border-width: 18px 0 18px 30px;
+      border-color: transparent transparent transparent #fff;
+      margin-left: 6px;
+    }
+  </style>
+</head>
+<body>
+
+  <!-- Screen overlay to trigger playback with audio -->
+  <div id="overlay" onclick="triggerPrank()">
+    <div class="play-btn"></div>
+  </div>
+
+  <!-- HTML5 Native Video Tag -->
+  <video id="prankVideo" playsinline preload="auto">
+    <source src="./nyan-cat.mp4" type="video/mp4">
+  </video>
+
+  <script>
+    function triggerPrank() {
+      const overlay = document.getElementById('overlay');
+      const video = document.getElementById('prankVideo');
+
+      // Hide the initial click overlay
+      overlay.style.display = 'none';
+      
+      // Show and play video with sound
+      video.style.display = 'block';
+      video.muted = false;
+      video.play();
+
+      // Trigger native device full screen if supported
+      if (video.requestFullscreen) {
+        video.requestFullscreen();
+      } else if (video.webkitRequestFullscreen) { /* Safari */
+        video.webkitRequestFullscreen();
+      }
+    }
+  </script>
+</body>
 </html>
