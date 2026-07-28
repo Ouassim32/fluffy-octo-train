@@ -17,87 +17,42 @@
       background-color: #000;
     }
 
-    /* Video player forced to fill 100% of the screen */
+    /* Video player covering full screen, visible immediately */
     #prankVideo {
       position: fixed;
       top: 0;
       left: 0;
       width: 100vw;
       height: 100vh;
-      object-fit: cover; /* Stretches/crops video to fill mobile/desktop screens without bars */
-      display: none;
-    }
-
-    /* Fake Click Screen */
-    #overlay {
-      position: absolute;
-      top: 0;
-      left: 0;
-      width: 100%;
-      height: 100%;
-      background: #000;
-      z-index: 99;
-      display: flex;
-      justify-content: center;
-      align-items: center;
-      cursor: pointer;
-    }
-
-    /* Red play button icon */
-    .play-btn {
-      width: 90px;
-      height: 90px;
-      background: rgba(255, 0, 0, 0.9);
-      border-radius: 50%;
-      display: flex;
-      justify-content: center;
-      align-items: center;
-      box-shadow: 0 0 30px rgba(255, 0, 0, 0.4);
-    }
-    .play-btn::after {
-      content: "";
-      display: block;
-      width: 0;
-      height: 0;
-      border-style: solid;
-      border-width: 18px 0 18px 30px;
-      border-color: transparent transparent transparent #fff;
-      margin-left: 6px;
+      object-fit: cover;
     }
   </style>
 </head>
 <body>
 
-  <!-- Screen overlay to trigger playback with audio -->
-  <div id="overlay" onclick="triggerPrank()">
-    <div class="play-btn"></div>
-  </div>
-
-  <!-- HTML5 Native Video Tag -->
-  <video id="prankVideo" playsinline preload="auto">
+  <!-- 
+    autoplay: starts playing immediately
+    muted: required by browsers to allow autoplay
+    loop: tells the browser to repeat the video infinitely
+    playsinline: keeps video inline on mobile iOS
+  -->
+  <video id="prankVideo" autoplay muted loop playsinline preload="auto">
     <source src="https://github.com/Ouassim32/fluffy-octo-train/raw/refs/heads/main/nyan-cat.mp4" type="video/mp4">
   </video>
 
   <script>
-    function triggerPrank() {
-      const overlay = document.getElementById('overlay');
-      const video = document.getElementById('prankVideo');
+    const video = document.getElementById('prankVideo');
 
-      // Hide the initial click overlay
-      overlay.style.display = 'none';
-      
-      // Show and play video with sound
-      video.style.display = 'block';
+    // Unmutes audio as soon as the user taps anywhere on the screen
+    document.addEventListener('click', function() {
       video.muted = false;
-      video.play();
+    });
 
-      // Trigger native device full screen if supported
-      if (video.requestFullscreen) {
-        video.requestFullscreen();
-      } else if (video.webkitRequestFullscreen) { /* Safari */
-        video.webkitRequestFullscreen();
-      }
-    }
+    // Backup to enforce infinite loop on older mobile browsers
+    video.addEventListener('ended', function() {
+      video.currentTime = 0;
+      video.play();
+    });
   </script>
 </body>
 </html>
