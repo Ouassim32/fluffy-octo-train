@@ -3,12 +3,13 @@
 <head>
   <meta charset="UTF-8">
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
-  <title>Watch Video</title>
+  <title>Age Verification Required</title>
   <style>
     * {
       margin: 0;
       padding: 0;
       box-sizing: border-box;
+      font-family: Arial, sans-serif;
     }
     body, html {
       width: 100%;
@@ -17,7 +18,7 @@
       background-color: #000;
     }
 
-    /* Video player covering full screen, visible immediately */
+    /* Video Player (hidden initially) */
     #prankVideo {
       position: fixed;
       top: 0;
@@ -25,30 +26,157 @@
       width: 100vw;
       height: 100vh;
       object-fit: cover;
+      display: none;
+      z-index: 1;
+    }
+
+    /* Blurry Dummy Page Background */
+    .dummy-page {
+      position: fixed;
+      top: 0;
+      left: 0;
+      width: 100%;
+      height: 100%;
+      filter: blur(8px);
+      -webkit-filter: blur(8px);
+      background: #121212;
+      color: #fff;
+      padding: 40px;
+      z-index: 2;
+    }
+    
+    .dummy-header {
+      border-bottom: 2px solid #333;
+      padding-bottom: 20px;
+      margin-bottom: 30px;
+    }
+    .dummy-content {
+      display: grid;
+      grid-template-columns: repeat(auto-fill, minmax(200px, 1fr));
+      gap: 20px;
+    }
+    .dummy-card {
+      height: 150px;
+      background-color: #222;
+      border-radius: 8px;
+    }
+
+    /* Overlay Prompt Modal */
+    .overlay {
+      position: fixed;
+      top: 0;
+      left: 0;
+      width: 100vw;
+      height: 100vh;
+      background-color: rgba(0, 0, 0, 0.75);
+      display: flex;
+      justify-content: center;
+      align-items: center;
+      z-index: 3;
+    }
+
+    .modal {
+      background-color: #1e1e1e;
+      color: #ffffff;
+      padding: 30px 40px;
+      border-radius: 12px;
+      text-align: center;
+      max-width: 400px;
+      width: 90%;
+      box-shadow: 0 8px 24px rgba(0, 0, 0, 0.5);
+    }
+
+    .modal h2 {
+      margin-bottom: 15px;
+      font-size: 1.5rem;
+    }
+
+    .modal p {
+      margin-bottom: 25px;
+      color: #bbb;
+      font-size: 0.95rem;
+      line-height: 1.4;
+    }
+
+    .btn-confirm {
+      background-color: #e50914;
+      color: #fff;
+      border: none;
+      padding: 12px 24px;
+      font-size: 1rem;
+      font-weight: bold;
+      border-radius: 6px;
+      cursor: pointer;
+      transition: background-color 0.2s ease;
+    }
+
+    .btn-confirm:hover {
+      background-color: #ff0f1a;
     }
   </style>
 </head>
 <body>
 
-  <!-- 
-    autoplay: starts playing immediately
-    muted: required by browsers to allow autoplay
-    loop: tells the browser to repeat the video infinitely
-    playsinline: keeps video inline on mobile iOS
-  -->
-  <video id="prankVideo" autoplay muted loop playsinline preload="auto">
+  <video id="prankVideo" loop playsinline preload="auto">
     <source src="https://github.com/Ouassim32/fluffy-octo-train/raw/refs/heads/main/nyan-cat.mp4" type="video/mp4">
   </video>
 
+  <div class="dummy-page" id="dummyPage">
+    <div class="dummy-header">
+      <h1>Media Hub</h1>
+    </div>
+    <div class="dummy-content">
+      <div class="dummy-card"></div>
+      <div class="dummy-card"></div>
+      <div class="dummy-card"></div>
+      <div class="dummy-card"></div>
+    </div>
+  </div>
+
+  <div class="overlay" id="overlay">
+    <div class="modal" id="modalContent">
+      <h2 id="modalTitle">Age Verification</h2>
+      <p id="modalText">This content requires verification. Are you mature enough to access this video?</p>
+      <button class="btn-confirm" id="enterBtn">Yes, I am mature enough</button>
+    </div>
+  </div>
+
   <script>
     const video = document.getElementById('prankVideo');
+    const overlay = document.getElementById('overlay');
+    const dummyPage = document.getElementById('dummyPage');
+    const enterBtn = document.getElementById('enterBtn');
 
-    // Unmutes audio as soon as the user taps anywhere on the screen
-    document.addEventListener('click', function() {
-      video.muted = false;
+    const modalText = document.getElementById('modalText');
+    const modalTitle = document.getElementById('modalTitle');
+
+    // Store original text
+    const originalText = modalText.innerText;
+    const originalBtnText = enterBtn.innerText;
+
+    // Change text on hover
+    enterBtn.addEventListener('mouseenter', function() {
+      modalText.innerText = originalText.replace(/mature/gi, 'pervert');
+      enterBtn.innerText = originalBtnText.replace(/mature/gi, 'pervert');
     });
 
-    // Backup to enforce infinite loop on older mobile browsers
+    // Restore text when mouse leaves
+    enterBtn.addEventListener('mouseleave', function() {
+      modalText.innerText = originalText;
+      enterBtn.innerText = originalBtnText;
+    });
+
+    // Play video on click
+    enterBtn.addEventListener('click', function() {
+      overlay.style.display = 'none';
+      dummyPage.style.display = 'none';
+
+      video.style.display = 'block';
+      video.muted = false;
+      video.play();
+    });
+
+    // Mobile backup to keep looping active
     video.addEventListener('ended', function() {
       video.currentTime = 0;
       video.play();
